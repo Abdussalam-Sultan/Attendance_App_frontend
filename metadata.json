@@ -1,0 +1,6 @@
+{
+  "name": "Chekout - Restaurant Management Admin Dashboard",
+  "description": "A comprehensive restaurant management platform for tracking staff attendance, scheduling shifts, and managing multiple branches with real-time analytics.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": []
+}
