@@ -1,6 +1,15 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+export function getNormalizedUrl(url: string): string {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  if (backendUrl && url.startsWith('/api')) {
+    const pathWithoutApi = url.replace(/^\/api/, '');
+    return `${backendUrl.replace(/\/$/, '')}${pathWithoutApi.startsWith('/') ? pathWithoutApi : `/${pathWithoutApi}`}`;
+  }
+  return url;
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

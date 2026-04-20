@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getNormalizedUrl } from '../lib/utils';
 import { offlineService, SyncAction } from '../lib/offline';
 
 export function useOffline() {
@@ -60,9 +61,10 @@ export function useOffline() {
   const smartFetch = async (url: string, options: RequestInit = {}) => {
     const method = options.method || 'GET';
     const isMutation = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method);
+    const isAuthRequest = url.includes('/auth/login') || url.includes('/auth/register');
 
     if (!navigator.onLine) {
-      if (isMutation) {
+      if (isMutation && !isAuthRequest) {
         // Queue mutation for later
         const headers: Record<string, string> = {};
         if (options.headers) {
@@ -105,14 +107,21 @@ export function useOffline() {
         return {
           ok: false,
           status: 503,
-          statusText: 'Offline: Data not in cache',
-          json: async () => ({ success: false, message: 'Data unavailable offline', offline: true })
+          statusText: 'Offline',
+          json: async () => ({ 
+            Success: false, 
+            success: false, 
+            message: isAuthRequest ? 'Connecting to server requires internet. Please check your connection.' : 'Data unavailable offline', 
+            offline: true 
+          })
         } as Response;
       }
     }
 
     // Online: proceed as normal
-    const response = await fetch(url, options);
+    const finalUrl = getNormalizedUrl(url);
+
+    const response = await fetch(finalUrl, options);
     
     // Cache successful GET requests
     if (response.ok && method === 'GET') {

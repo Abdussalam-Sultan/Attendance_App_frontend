@@ -3,6 +3,8 @@
  * Manages local storage (IndexedDB) and synchronization queue for offline capabilities.
  */
 
+import { getNormalizedUrl } from './utils';
+
 const DB_NAME = 'CheckoutOfflineDB';
 const DB_VERSION = 1;
 
@@ -138,7 +140,8 @@ class OfflineService {
 
     for (const action of actions) {
       try {
-        const response = await fetch(action.url, {
+        const finalUrl = getNormalizedUrl(action.url);
+        const response = await fetch(finalUrl, {
           method: action.method,
           headers: action.headers,
           body: JSON.stringify(action.body)

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Branch } from '../types';
+import { useOffline } from '../context/useOffline';
 import { CustomSelect } from './CustomSelect';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
+import { WifiOff } from 'lucide-react';
 
 export function Login() {
   const { login } = useAuth();
+  const { isOnline, smartFetch } = useOffline();
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,7 +30,7 @@ export function Login() {
 
   async function fetchBranches() {
     try {
-      const response = await fetch('/api/branches/public');
+      const response = await smartFetch('/api/branches/public');
       if (response.ok) {
         const data = await response.json();
         const branchList = data.data || [];
@@ -57,7 +60,7 @@ export function Login() {
         ? { name, email, password, confirmPassword, gender, branch_id: parseInt(branchId), phoneNumber } 
         : { email, password };
       
-      const response = await fetch(endpoint, {
+      const response = await smartFetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
