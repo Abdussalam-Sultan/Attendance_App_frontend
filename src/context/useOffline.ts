@@ -19,11 +19,19 @@ export function useOffline() {
     // Initial sync check
     updatePendingCount();
 
+    // Automatic sync interval
+    const syncInterval = setInterval(() => {
+      if (navigator.onLine && !isSyncing) {
+        sync();
+      }
+    }, 30000); // Check every 30 seconds
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      clearInterval(syncInterval);
     };
-  }, []);
+  }, [isSyncing]);
 
   const updatePendingCount = async () => {
     const actions = await offlineService.getPendingActions();
@@ -39,6 +47,8 @@ export function useOffline() {
         console.log(`Sync action ${action.id}: ${success ? 'Success' : 'Failed'}`);
       });
       await updatePendingCount();
+    } catch (e) {
+      console.error('Auto-sync error:', e);
     } finally {
       setIsSyncing(false);
     }
@@ -65,7 +75,7 @@ export function useOffline() {
         let body = null;
         if (options.body) {
           try {
-            body = JSON.parse(options.body as string);
+            body = typeof options.body === 'string' ? JSON.parse(options.body) : options.body;
           } catch (e) {
             body = options.body;
           }
@@ -91,7 +101,13 @@ export function useOffline() {
           } as Response;
         }
         
-        throw new Error('No internet connection and data is not cached');
+        // Graceful failure for offline data fetching
+        return {
+          ok: false,
+          status: 503,
+          statusText: 'Offline: Data not in cache',
+          json: async () => ({ success: false, message: 'Data unavailable offline', offline: true })
+        } as Response;
       }
     }
 

@@ -11,26 +11,16 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
-
       VitePWA({
         registerType: "autoUpdate",
-        devOptions: {
-          enabled: true, // allows PWA testing in development
-        },
-        includeAssets: [
-          "favicon.ico",
-          "apple-touch-icon.png",
-          "masked-icon.svg",
-        ],
+        includeAssets: ["favicon.ico"],
         manifest: {
           name: "Chekout Attendance App",
           short_name: "Chekout",
-          description: "An attendance taker app for businesses",
           theme_color: "#ffffff",
           background_color: "#ffffff",
           display: "standalone",
           start_url: "/",
-          scope: "/",
           icons: [
             {
               src: "pwa-192x192.png",
@@ -41,12 +31,6 @@ export default defineConfig(({ mode }) => {
               src: "pwa-512x512.png",
               sizes: "512x512",
               type: "image/png",
-            },
-            {
-              src: "pwa-512x512.png",
-              sizes: "512x512",
-              type: "image/png",
-              purpose: "any maskable",
             },
           ],
         },
@@ -67,10 +51,9 @@ export default defineConfig(({ mode }) => {
       hmr: process.env.DISABLE_HMR !== "true",
       proxy: {
         "/api": {
-          target: env.VITE_BACKEND_URL || "http://localhost:5000",
+          target: env.VITE_BACKEND_URL,
           changeOrigin: true,
           secure: false,
-          rewrite: (path) => path.replace(/^\/api/, ""),
         },
       },
     },

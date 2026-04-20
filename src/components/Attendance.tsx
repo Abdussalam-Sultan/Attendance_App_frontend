@@ -492,8 +492,14 @@ export function Attendance() {
                 <tr>
                   <td colSpan={7} className="px-4 py-12 text-center">
                     <div className="max-w-[200px] mx-auto space-y-2">
-                      <p className="text-sm font-medium text-[#8a8070] dark:text-white/60">No attendance records found</p>
-                      <p className="text-[10px] text-[#8a8070]/60 dark:text-white/30 uppercase tracking-widest leading-relaxed">Select a different view or check back later</p>
+                      <p className="text-sm font-medium text-[#8a8070] dark:text-white/60">
+                        {!isOnline ? "No offline data found" : "No attendance records found"}
+                      </p>
+                      <p className="text-[10px] text-[#8a8070]/60 dark:text-white/30 uppercase tracking-widest leading-relaxed">
+                        {!isOnline 
+                          ? "Please connect to the internet to fetch fresh records for this view." 
+                          : "Select a different view or check back later"}
+                      </p>
                     </div>
                   </td>
                 </tr>
